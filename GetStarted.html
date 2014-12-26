@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Getting Started with Three.js</title>    
+  	<script src="../build/three.min.js"></script>
+		<script src="js/renderers/Projector.js"></script>
+		<script src="js/renderers/CanvasRenderer.js"></script>
+
+		<script src="js/libs/stats.min.js"></script>
+    <script>
+    window.onload = function() {
+
+        var renderer = new THREE.WebGLRenderer();
+        renderer.setSize( 1400, 700 );
+        document.body.appendChild( renderer.domElement );
+		
+        var scene = new THREE.Scene();
+ 
+        var camera = new THREE.PerspectiveCamera(
+            35,             // Field of view
+            800 / 600,      // Aspect ratio
+            0.1,            // Near plane
+            10000           // Far plane
+        );
+		
+        camera.position.z = 500;	    
+        camera.lookAt( scene.position );
+        var light = new THREE.PointLight( 0xFFFF00 );
+        light.position.set( 10, 0, 10 );
+        scene.add( light );				    
+		cube = new THREE.Mesh( new THREE.CubeGeometry( 20, 20, 20 ), new THREE.MeshNormalMaterial() );
+		cube.position.x = 0;
+		scene.add(camera);
+		scene.add(cube );		
+		xForce = 1;
+		zForce = 3;  
+		zAcceleratorCounter = 1;  // to control the speed of object move in z Axis
+        animate();		
+		function animate() {
+		        render(); 
+		 		requestAnimationFrame( animate );			
+		}
+		function render() {
+		     zAcceleratorCounter += 1;
+			if (zAcceleratorCounter < 1)
+			{   zForce = zForce + cube.position.z *(.008);
+			}
+			if (zAcceleratorCounter >200)
+			{   zForce = zForce - cube.position.z *(.008);
+			}
+			if (cube.position.z > 400)
+			{ 
+			  zForce = zForce * (-1);			  
+			}
+			if (cube.position.z < 0)
+			{ 
+			  zForce =zForce * (-1);
+			}
+			if(cube.position.x >100)
+			{  
+			    xForce = xForce * (-1);   
+			}
+			if(cube.position.x <-100)
+			{  
+			    xForce = xForce * (-1);  				
+			}
+			cube.position.z  = cube.position.z + zForce;
+			cube.rotation.z  += .01;
+			cube.rotation.y  += .01;
+			renderer.render( scene, camera );
+		}	
+		
+    };
+    </script>
+</head>
+<body></body>
+</html>
