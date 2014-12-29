@@ -5,7 +5,6 @@
   	<script src="../build/three.min.js"></script>
 		<script src="js/renderers/Projector.js"></script>
 		<script src="js/renderers/CanvasRenderer.js"></script>
-
 		<script src="js/libs/stats.min.js"></script>
     <script> 
 	 /*                                              AUTHOR        : AK67 
@@ -27,32 +26,31 @@
             10000           // Far plane
         );
 		
-        camera.position.z = 200;	    
+        camera.position.z = 150;	    
         camera.lookAt( scene.position );
         var light = new THREE.PointLight( 0xFFFF00 );
-        light.position.set( 10, 0, 10 );
+        light.position.set( 0, 0, 20 );
         scene.add( light );				    
-		var geom = new THREE.SphereGeometry(12,12,12);
-		var jupGeom = new THREE.SphereGeometry(3,5,6);
-		var sun = giveMeSphere(geom,0xFFCC00,0xFFCC00,10);
-		var jupiter = giveMeSphere(jupGeom,0x990000,0x990000,10);
-		var xDirectionForJupiter=1;
-		var zDirectionForJupiter=1;
-		jupiter.position.x = sun.position.x -20;
+		var geom = new THREE.SphereGeometry(5);
+		var jupGeom = new THREE.SphereGeometry(3);
+		var sun = giveMeSphere(geom,0xFFCC00,0xFFCC00);
+		var jupiter = giveMeSphere(jupGeom,0x990000,0x990000);
+		var xDirectionForJupiter = 1;
+		var zDirectionForJupiter = 1;
+		jupiter.position.x = sun.position.x - 20;
 		scene.add(camera);
 		scene.add(sun) ;	
         scene.add(jupiter) ;		
         animate();		
-		  var radiusOfSunJupiter = getRadius(jupiter,sun); 
-		  // console.log("radiusOfSunJupiter"+radiusOfSunJupiter);
+		var radiusOfSunJupiter = getRadius(jupiter,sun); 
+		
 		function animate() {
 		        render(); 
 		 		requestAnimationFrame( animate );			
 		}
 		function render() {	                 
-           		
-            revolveX(radiusOfSunJupiter, jupiter, sun, .5, 0, xDirectionForJupiter);		
-			revolveZ(jupiter,xDirectionForJupiter);
+		
+            revolveX(radiusOfSunJupiter, jupiter, sun, .5, 0, xDirectionForJupiter);	
 		    sun.rotation.y += .01;
 			jupiter.rotation.y +=.01;
 			renderer.render( scene, camera );
@@ -64,33 +62,30 @@
 		// xSpeedOfRevoltuionOfSource is used to keep the system consistent if the source is itself moving 
 		// startDirection self Explanatory
 		function revolveX(radius,obj,objToRevolveAround,speedOfRevolution,xSpeedOfRevoltuionOfSource,startDirection)
-		{  		    
+		{  		  
+            	revolveZ(obj,zDirectionForJupiter);
+				console.log("obj.position.z"+obj.position.z);
+				console.log("z direction"+zDirectionForJupiter);
+				//console.log("xDirectionForJupiter" + xDirectionForJupiter);
 		   // if direction is 0 then move in +X axis else move towards -X axis
 		   var distanceBetweenObjcs = objToRevolveAround.position.x - obj.position.x ;
-		   console.log("dir"     + xDirectionForJupiter);
-		   console.log("obj pos" + obj.position.x);
-		   console.log("diff"    + (objToRevolveAround.position.x - radius));
+		   
 		   if(xDirectionForJupiter == 0)
 		   { 
-			   if(obj.position.x >= objToRevolveAround.position.x +radius)
+			   if(obj.position.x >= (objToRevolveAround.position.x +radius))
 			   {
 				    obj.position.x = obj.position.x - speedOfRevolution;
 				    // after changing x ,if condition is fullfiled then switch direction
 					 if(obj.position.x < objToRevolveAround.position.x + radius)
 				   {
-					 xDirectionForJupiter = 1;
-				   }
+					 xDirectionForJupiter = 1;	
+					 zDirectionForJupiter = directionChanger(zDirectionForJupiter);
+				   }		   
 			   }
 			   else
 			   {  
 			        obj.position.x = obj.position.x + speedOfRevolution;
-				    // after changing x ,if condition is fullfiled then switch direction
-					 if(obj.position.x <= objToRevolveAround.position.x + radius)
-				   {
-					 xDirectionForJupiter = 0;
-				   }
 			   }
-			   
 		   }
 		   else 
 		   {
@@ -98,68 +93,49 @@
 			   {
 				    obj.position.x = obj.position.x - speedOfRevolution;
 				      // after changing x , condition is fullfiled then switch direction
-					 if(obj.position.x <= objToRevolveAround.position.x +radius)
+					 if(obj.position.x <= objToRevolveAround.position.x + radius)
 				   {
 					 xDirectionForJupiter = 0;
+                     zDirectionForJupiter = directionChanger(zDirectionForJupiter);
 				   }
 			   }
 			    else
 			   {  
 			        obj.position.x = obj.position.x - speedOfRevolution;
-				    // after changing x , condition is fullfiled then switch direction
-					 if(obj.position.x >= objToRevolveAround.position.x + radius)
-				   {
-					 xDirectionForJupiter = 1;
-				   }
 			   }
 		   }
 		}
 		
 		function revolveZ(obj,direction)
-        { 
-		   if(zDirectionForJupiter==1)
-		   {
-			   if(direction == 0)
-			   { 
-				 obj.position.z += .5; 
-			   } 
-			   else
-			   {
-				 obj.position.z -= .5;
-			   }
-		   }
-		   else 
-		   {
-		     if(direction == 0)
-			   { 
-				 obj.position.z -= .5; 
-			   } 
-			   else
-			   {
-				 obj.position.z += .5;
-			   }
-		   }
-		   zDirectionForJupiter = directionChanger(zDirectionForJupiter);
+        { 		   
+		       console.log("Zdirection"+direction);
+			     if(direction == 1)
+				 {				 
+				    obj.position.z += .5; 
+			   	 }
+                 else
+				 {
+     				 obj.position.z -= .5; 
+				 }
+		   
 		}
        		
 		function getRadius(objSecondary , objPrimary)
 		{    
 		    var radius = objPrimary.position.x - objSecondary.position.x;
-			if(radius <0)
+			if( radius < 0 )
 			{
 			   radius = radius * (-1);
 			}
  		    return radius;
 		}
 		 // returns a spherical Object
-		function giveMeSphere(geometry,color,specular,shineness)
+		function giveMeSphere(geometry,color,shading)
 		{
 		    var sphere = new THREE.Mesh(
 										geometry,
 										new THREE.MeshPhongMaterial( {
 										color: color,
-										specular:specular,
-										shininess: shineness
 										})
 										);
 			return sphere;							
@@ -168,13 +144,13 @@
 		
 		function directionChanger(direction)
 		{
-		  if(direction ==1)
+		  if(direction == 1)
 		  {
 		    direction = 0
 		  }
 		  else 
 		  { 
-		    direction =1;
+		    direction = 1;
 		  }
 		  return direction;
 		}
